@@ -1,0 +1,116 @@
+js的使用
+	1、<script>js代码</script>
+	2、<script src="外部js文件"></script>
+	3、通常将script标签放在body标签的末尾。提高页面加载速度，一些js运行需要页面都加载完成。
+js标识符
+	1、可以使用字母，数字，划线和美元符号
+	2、不能以数字开头
+	3、大小写敏感
+	4、不能使用关键字，尽量不使用保留字
+js分号
+	语句后的分号必须添加
+js注释
+	1、单行注释 //...
+	2、多行注释 /*...*/
+	3、单行注释两端要添加空格，避免出现字符编码问题多行注释要注意缩进问题。
+js变量声明
+	使用var关键字声明，不区分数据类型 var a = 3;
+js数据类型
+	1、string 字符串，使用单引号或者双引号
+	2、number 数字
+	3、boolean 布尔型 取值true或者false
+	4、Array 数组
+	5、Object 对象
+	6、null 空
+	7、undefined 未定义
+js运算符
+	1、算数运算符
+		+、-、*、%、/、++，--
+	2、赋值运算符
+		=、+=、-=、*=、/=、%=
+	3、字符串操作
+		+
+	4、比较运算符
+		==、===、!=、!==、>、<、>=、<=
+	5、逻辑运算符
+		&&、||、!
+	6、条件运算符
+		?:
+js语句
+	1、if{}else if{}else{}
+	2、switch(var){case vale1: 语句; break;case value2: 语句; break; default: 语句; break;}
+	3、for(初始值;判断条件;每次增加数){语句;}
+	4、for(object in collection){语句;}
+	5、while(条件){语句;}
+	6、do{语句;}while(条件);
+	7、跳转语句：break continue
+js函数
+	1、函数声明
+	function 函数名(arg1,arg2...){语句块;return;}
+	重要特性：函数声明提升。意思是在执行代码之前先读取函数声明，意味着可以把函数声明放在调用它的语句后面。
+	2、函数表达式(匿名函数/拉姆达函数)
+	var functionName = function(arg1,arg2...){函数体};
+	3、递归
+	定义：一个函数调用自身
+	方法
+	通过函数名
+	使用arguments.callee方法。此方法在严格模式下不能通过。
+	使用命名函数表达式。最佳模式。
+	var functionName = (function f(arg){return arg * f(arg-1)});
+	2、调用
+	函数名(实参1，实参2...);
+	3、函数的重载
+	使用auguments对象可以获得函数参数信息，包括参数个数和参数值。利用可以获得参数个数这个特性可以模拟函数的重载，根据参数个数执行不同的操作。
+	4、闭包
+	闭包是指有权访问另一个函数作用域中的变量的函数。创建闭包的常见方式，就是在一个函数内部创建另一个函数。
+	当函数第一次被调用时，会创建一个执行环境(Execution context)和相应的作用域链，并把作用域链赋值给一个特殊内部属性(scope)。然后，使用this,auguments和其它命名参数的值来初始化函数的活动对象(activation object)。但在作用域链中，外部函数的活动对象始终处于第二位，外部函数的外部函数的活动对象处于第三位，...直至作为作用域链终点的全局执行环境。
+	闭包与变量
+	因为闭包保存的是整个变量对象，所以闭包只能取得包含函数中任何变量的最后一个值。
+
+js异常处理
+	try{运行代码}catch(err){异常处理代码;}
+	自定义异常
+	throw 异常;异常可以是 JavaScript 字符串、数字、逻辑值或对象。
+jsDOM操作
+	1、获取元素
+		document.getElementById(id);
+		document.getElementsByTagName(tag);
+		document.getElementsByClassName(class);
+	2、改变元素内容
+		innerHTML属性
+		innerText属性
+	3、改变css样式
+		style属性
+js事件
+	1、事件流-事件的传递过程
+		事件冒泡：当前事件结点的父结点传递到window结点
+		事件捕获：从window结点传递到当前事件结点的父结点
+	2、添加事件方式
+		直接在html代码中通过属性添加
+		DOM0级：在js中获取元素，并通过属性添加
+		DOM2级：添加事件监听器(句柄)
+		element.addEventListener("要监听的事件",调用的函数名(不加括号),useCapture);
+		element.removeEventListener("要监听的事件",调用的函数名(不加括号),useCapture);
+	3、兼容IE8以下
+		attactevent/detachevent
+	4、事件对象event
+		属性
+		cancelable 返回布尔值，指示事件是否可拥可取消的默认动作。
+		type 返回当前 Event 对象表示的事件的名称。
+		currentTarget 返回其事件监听器触发该事件的元素。
+		Target 返回触发此事件的元素（事件的目标节点）。
+		方法
+		preventDefault() 通知浏览器不要执行与事件关联的默认动作。
+		stopPropagation() 终止事件在传播过程的捕获、目标处理或起泡阶段进一步传播。调用该方法后，该节点上处理该事件的处理程序将被调用，事件不再被分派到其他节点。
+js正则表达式(RegExp)
+	语法
+	直接量语法：/pattern/attributes
+	创建RegExp对象语法：var reg = new RegExp(pattern,attributes);
+	参数
+	pattern：一个字符串，指定了正则表达式的模式或其他正则表达式。
+
+
+
+
+
+

@@ -1,0 +1,80 @@
+1、安装
+	git官网--http://git-scm.com
+2、配置
+	 git config --global user.name "Your Name"
+	 git config --global user.email "email@example.com"
+3、创建版本库
+	创建一个文件夹
+	在文件夹中运行git init
+4、将文件添加到暂存区
+	git add 文件
+5、提交---暂存区中所有内容提交到仓库
+	git commit -m "说明"	
+6、查看当前状态
+	git status
+7、查看修改内容--用于修改了的文件
+	git diff
+8、提交日志
+	git log 
+	可以加参数 --pretty=oneline -- 显示一行
+	--graph 显示时间线
+9、HEAD表示当前版本，HEAD^->上一版本，HEAD^^->上上-版本
+	长串16进制数是commit id 一般取前7位就行
+10、版本回退
+	git reset --hard 要回退到的版本(HEAD或者commit id)
+	用git log可以查看提交历史，以便确定要回退到哪个版本。
+	用git reflog查看命令历史，以便确定要回到未来的哪个版本。
+11、撤销修改
+	丢弃工作区的修改 -- git checkout -- 文件名
+	撤销暂存区的修改 -- git reset HEAD 文件名
+12、删除文件
+	git rm 文件名 删除文件
+	git commit 提交删除操作
+	误删文件可以通过 git checkout -- 文件名恢复
+13、添加远程库
+	建立与远程库的连接 -- git remote add origin git@github.com:qdlee/test.git
+	把本地内容推送到远程库--第一次要添加参数u
+	git push -u origin master
+	从远程库克隆
+	git clone git@github.com:qdlee/test.git
+	从远程库拉取
+	git pull
+14、分支管理
+	查看分支：git branch
+	创建分支：git branch <name>
+	切换分支：git checkout <name>
+	创建+切换分支：git checkout -b <name>
+	合并某分支到当前分支：git merge <name>
+	删除分支：git branch -d <name>
+	当Git无法自动合并分支时，就必须首先解决冲突。解决冲突后，再提交，合并完成。
+	非Fast Forward方式合并分支
+	git merge --no-ff -m "说明" <name>
+	合并分支时，加上--no-ff参数就可以用普通模式合并，合并后的历史有分支，能看出来曾经做过合并，而fast forward合并就看不出来曾经做过合并。
+	强制删除分支
+	git branch -D <name>
+15、存储工作区
+	存储 -- git stash
+	查看 -- git stash list
+	恢复但不删除 -- git stash apply [name]
+	恢复并删除 -- git stash pop [name]
+	删除 -- git stash drop [name]
+16、标签管理
+	标签作用
+		发布一个版本时，我们通常先在版本库中打一个标签，这样，就唯一确定了打标签时刻的版本。将来无论什么时候，取某个标签的版本，就是把那个打标签的时刻的历史版本取出来。所以，标签也是版本库的一个快照。
+	创建标签
+		git tag <name> [commit id]
+	指定标签信息
+		git tag -a <tagname> -m "blablabla..."
+	用PGP签名标签
+		git tag -s <tagname> -m "blablabla..."
+	查看所有标签
+		git tag
+	命令git push origin <tagname>可以推送一个本地标签；
+	命令git push origin --tags可以推送全部未推送过的本地标签；
+	命令git tag -d <tagname>可以删除一个本地标签；
+	命令git push origin :refs/tags/<tagname>可以删除一个远程标签。
+	忽略特殊文件
+	忽略某些文件时，需要编写.gitignore
+	配置别名
+	git --global alias 别名 命令
+

@@ -1,0 +1,85 @@
+
+
+
+/**
+ * 去掉字符串首尾的空格
+ * @param  {[string]} string [要操作的字符/**
+ * 使用命名空间和生成命名空间函数
+ * @type {Object}
+ */
+var GLOBAL = {};
+GLOBAL.namespace = function(name){
+	var arr = name.split(".");
+	var obj = GLOBAL;
+	for(i=(arr[0]==="GLOBAL")?1:0; i<arr.length;i++){
+		obj[arr[i]] = obj[arr[i]] || {};
+		obj = obj[arr[i]];
+	}
+};串]
+ * @return {[type]}        [description]
+ */
+function trim (string) {
+	return string.replace(/^\s+ | \s+$/,"");
+}
+
+/**
+ * 增加类型判断的方法
+ */
+
+function isNumber (n) {
+	return !isNaN(n);
+}
+
+function isString (val) {
+	return typeof val === "string";
+}
+
+function isBoolean (val) {
+	return typeof val === "boolean";
+}
+
+function isNull (val) {
+	return val===null;
+}
+
+function isUndefined (val) {
+	return typeof val === "undefined";
+}
+
+function isEmpty (val) {
+	return /^\s*$/.test(val);
+}
+
+function isArray (val) {
+	return val instanceof Array;
+}
+
+/**
+ * 封装getElementById()
+ */
+
+function $ (id) {
+	return document.getElementById(id);
+}
+
+/**
+ * 定义getElementsByClassName()方法
+ * @param  {[string]} className [class名称，必须]
+ * @param  {[Element]} root      [要从其中查找的根结点，可选，默认body元素]
+ * @param  {[string]} tag       [要从其中查找的标签名，可选，默认全部标签]
+ * @return {[Array]}           [查找到的元素的数组]
+ */
+function getElementByClassName (className,root,tag) {
+	var result = [];//存储找到的元素
+	root = root || document.body;
+	tag = tag || "*";
+	var elements = node.getElementsByTagName(tag);
+
+	for (var i = 0; i < elements.length; i++) {
+		var regx = new RegExp(className);
+		if (regx.test(elements[i].className)) {
+			result.push(elements[i]);
+		}
+	}
+	return result;
+}

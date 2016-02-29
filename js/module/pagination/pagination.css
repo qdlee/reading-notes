@@ -1,0 +1,108 @@
+/*
+ * Pagination
+ */
+.dataTables_paginate {
+	float: right;
+	text-align: right;
+}
+
+/* Two button pagination - previous / next */
+.paginate_disabled_previous,
+.paginate_enabled_previous,
+.paginate_disabled_next,
+.paginate_enabled_next {
+	height: 19px;
+	float: left;
+	cursor: pointer;
+	*cursor: hand;
+	color: #111 !important;
+}
+.paginate_disabled_previous:hover,
+.paginate_enabled_previous:hover,
+.paginate_disabled_next:hover,
+.paginate_enabled_next:hover {
+	text-decoration: none !important;
+}
+.paginate_disabled_previous:active,
+.paginate_enabled_previous:active,
+.paginate_disabled_next:active,
+.paginate_enabled_next:active {
+	outline: none;
+}
+
+.paginate_disabled_previous,
+.paginate_disabled_next {
+	color: #666 !important;
+}
+.paginate_disabled_previous,
+.paginate_enabled_previous {
+	padding-left: 23px;
+}
+.paginate_disabled_next,
+.paginate_enabled_next {
+	padding-right: 25px;
+	margin-left: 25px;
+}
+
+/* Full number pagination */
+.paging_full_numbers {
+	height: 22px;
+	line-height: 22px;
+	font-size: 0 ;
+}
+.paging_full_numbers a{
+	font-size: 14px;
+}
+.paging_full_numbers a:visited {
+	text-decoration: none;
+}
+.paging_full_numbers a:active {
+	outline: none;
+	text-decoration:none;
+}
+.paging_full_numbers a:hover {
+	text-decoration: none;
+}
+
+.paging_full_numbers a.paginate_button,
+.paging_full_numbers a.paginate_active {
+	border: 1px solid #ddd;
+	padding: 5px 10px;
+	cursor: pointer;
+	color: #428bca !important;
+	border-left: 0px;
+}
+
+.paging_full_numbers a.paginate_button {
+	background-color: #fff;
+}
+
+.paging_full_numbers a.paginate_button:hover {
+	background-color: #eee;
+	text-decoration: none !important;
+}
+
+.paging_full_numbers a.paginate_active {
+	background-color: #428bca;
+	border-color: #428bca;
+	color: #fff !important;
+}
+
+.paging_full_numbers a.paginate_button_disabled {
+	color: #888 !important;
+	cursor: default;
+}
+.paging_full_numbers a.paginate_button_disabled:hover {
+	background-color: #fff;
+}
+
+.paging_full_numbers a.paginate_button.first {
+	border-radius: 4px 0px 0px 4px;
+	border-left: 1px solid #ddd;
+}
+
+.paging_full_numbers a.paginate_button.last {
+	border-radius: 0px 4px 4px 0px;
+}
+
+

@@ -1,0 +1,194 @@
+命令
+	shutdown -h now 立刻进行关机
+	shutdown -r now 立刻重启
+	reboot 立刻重启
+	logout 用户注销
+	pwd 显示当前路径
+	cd 改变目录
+	ls 列出文件和目录
+		ls -a 显示隐藏文件
+		ls -l 显示长列表格式
+	mkdir 建立目录
+	rmdir 删除空目录
+	touch 建立空文件
+	cp 复制命令
+		cp -r dir1 dir2 递归复制命令(复制子目录信息)
+	mv 移动文件和改文件名
+	rm 删除文件和目录
+	rm -rf 删除所有内容(包括目录和文件) r-递归 f-强制
+	ln 建立符号连接
+	ln -s源目标
+	ln -s /etc/inittab [inittab指向实际文件/etc/inittab]
+	more 显示文件内容，带分页，空格下一页，ctrl+pgup上一页
+	less 显示文件内容，带分页
+	grep 在文本中查询内容 grep 查找内容 文件
+	| 管道命令：把上一个命令的结果交给|后的命令处理
+	man 帮助
+	find 搜索文件及目录
+	重定向命令
+	>文件 将结果保存到文件中(覆盖写)
+	>>文件 将结果保存到文件中(追加写)
+	cat 查看一个文件的内容
+	tar -zxvf 文件名 ---解压文件
+	运行一个文件---./文件名
+	env 显示当前操作系统的环境变量
+使用vi编辑器
+	输入vi 文件名
+	输入i 进入插入模式
+	按esc 进入命令模式
+	输入:[wq表示退出保存][q!表示退出不保存]
+文件目录
+	/--代表根目录
+	root--存放root用户的相关文件
+	home--存放变通用户的相关文件，新建用户时，会以用户名为名称在此目录下新建一个文件夹。
+	bin--存放常用命令
+	sbin--具有相应权限才可以使用的命令
+	mnt--默认挂载光驱和软驱的目录
+	boot--存入引导相关的文件
+	etc--存放配置相关的文件
+	var--存放经常变化的文件
+用户管理
+	添加用户--useradd 用户名
+	修改密码--passwd 用户名
+	删除用户--userdel 用户名。不会删除用户主目录
+	删除用户--userdel -r 用户名。删除用户主目录
+指定运行级别
+	0--关机
+	1--单用户
+	2--多用户状态没有网络服务
+	3--多用户状态有网络服务
+	4--系统未使用保留给用户
+	5--图形界面
+	6--系统重启
+	常用运行级别是3和5，要修改默认的运行级别可修改文件/ect/inittab的id:5:initdefault;这一行中的数字
+	现在使用targets来代替运行级别
+	multi-user.target == 3
+	graphical.target == 5
+	查看当前默认target
+	systemctl get-default
+	设置默认target
+	systemctl set-default TARGET.target
+文件所有者、所在组和其它组
+	添加组---groupadd 组名
+	查看所有组---cat /etc/group
+	创建用户并指定所在组---useradd -g 组名 用户名
+	查看所有用户信息---cat /etc/passwd
+	文件权限
+	权限：r-可读-4|w-可写-2|x-可执行-1
+	-|---|---|---
+	1、文件类型。-代表普通文件
+	2、文件所有者对该文件的权限
+	3、文件所在组对该文件的权限
+	4、其它组的用户对该文件的权限
+	chmod--改变文件或者目录的权限
+	chmod 权限 文件
+	usermod--改变用户所在组
+	usermod -g 组名 用户名
+	chown--改变文件所有者
+	chown 用户名 文件名
+linux分区
+	挂载命令
+	mount [-参数] [设备名称] [挂载点]
+	挂载光驱时，可直接使用mount /mnt/cdrom
+	卸载命令
+	umount [设备名称]
+	查看磁盘使用情况
+	df -参数 例：df -l
+	查看目录在哪个分区
+	df 目录全路径
+	查看linux系统分区具体情况
+	fdisk -l
+shell
+	作为命令语言互动式地解释和执行用户输入的命令。
+	用来进行程序设计
+	《linux命令、编辑器和shell编程》
+	三种shell
+	Bourne  ---/bin/sh
+	C       ---/bin/csh
+	Kom     ---/bin/ksh
+	修改shell
+	chsh -s 输入新的shell 如：/bin/csh --要输入全路径
+	命令补全---tab键
+	一下----补全
+	二下----列出可能选项
+	history ---- 查看历史
+	history 5 ---显示最近使用的5个命令
+	！5 执行历史编号为5的命令
+	！ls 执行最后一次以ls开头的命令
+网络环境配置
+	方法一、1、修改 /etc/sysconfig/network-scripts/ifcfg-eno1
+	2、/ect/rc.d/init.d/network restart使设置生效
+	方法二
+		ifconfig 网卡名称 ip地址
+		只是临时生效
+	方法三 
+		1、setup
+		2、/ect/rc.d/init.d/network restart使设置生效
+RPM管理----RedHat Package Manager
+	rpm -qa --查询安装的所有rpm软件包
+	rpm -q 软件包名--查询软件包是否安装
+	rpm -qi 软件包名--查询软件包信息
+	rpm -qf 软件包名--查询软件包文件
+	安装rpm包
+	rpm -i rpm包全路径--安装包到当前系统
+	参数
+		i=install 安装
+		v=verbose 提示
+		h=hash 进度条
+任务调度
+	1、设置任务
+		crontab -e
+	先写时间，再写任务
+	* * * * * date >> /home/mydate2
+	调度文件的时间规则		
+	格式都是代表每xx的第几xx
+	顺序
+	分钟------0-59
+	小时------0-23
+	日------1-31
+	月------1-12
+	星期------0-6
+	*代表每一xx都执行
+	2、同时执行多个任务
+	将任务写入一个sh文件中，运行此文件
+	3、终止任务--尽量不要使用，使用crontab -e 修改
+	crontab -r 
+	4、列出任务
+	crontab -l
+进程
+	1、查看进程
+		ps -aux 
+	2、终止进程
+		kill 进程号
+		强制终止
+		kill -9 进程号
+		killall 进程 把进程和子进程都终止
+	3、动态显示进程信息
+		top
+		top -d 数字 刷新时间
+		q--退出
+		u--显示特定用户信息
+	cal 显示日历
+	date 显示/更改时间
+网络监控
+	netstat -an 
+	ping----检测网络连通状态
+	tranceroute-----追踪路由
+	route ---- 查看本机路由情况
+用户登录后自动运行的脚本文件
+	基本配置数据
+		.bashrc -----位于主目录下
+		/etc/bashrc ----系统脚本
+	配置环境变量
+		.bash_profile ------位于主目录下
+		/etc/profile ------ 系统脚本
+压缩命令
+	zip 文件名.zip 要压缩的文件--多个文件加空格
+	zip -r 文件名.zip 要压缩的文件夹
+解压命令
+	unzip 文件名.zip
+
+
+	
+
+

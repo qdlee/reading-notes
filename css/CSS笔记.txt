@@ -1,0 +1,123 @@
+语法
+	选择器{属性声明}
+	selector{property1:value;property2:value;}
+注释
+	/*注释内容*/
+浏览器私有属性
+	chrome,safari	-webkit-
+	firefox			-moz-
+	IE				-ms-
+	opera			-o-
+	兼容：将私有属性写在前面，标准属性写在后面
+属性值语法
+	基本元素
+	1、关键字 auto,solid,bold...
+	2、类型
+		基本类型 length,percentage,color
+		其他类型 'padding-width',color-stop
+	3、符号 / ,
+	4、inherit,initial
+	组合符号
+	1、空格
+	2、&& 要同时写两个，不能只写一个
+	3、|| 至少要写一个
+	4、|  只能写一个
+	5、[] 组合元素
+	6、数量符号 只能写一次
+	7、+  可以写一个或多个
+	8、？ 可以写零个或一个
+	9、{m,n} 最少写m个，最多写n个
+	10、*  可以写零个或多个
+	11、# 可以写1个或多个，中间用逗号隔开
+@规则
+	@media
+	@keyframes
+	@font-face
+选择器
+	简单选择器
+		标签选择器	标签名{}
+		类选择器	.类名{}
+		id选择器	#id{}
+		通配符选择器	*	选择页面内所有元素
+		属性选择器	[属性名=属性值]    属性值不加引号
+		属性包含选择器	[属性名~=属性值]
+		属性+中划线开头选择器	[属性名|=属性值] 主要用在lang属性
+		属性开头选择器  [属性名^=属性值] 如果属性值为符号或者中间有空格，需要使用引号引起来
+		属性结尾选择器 [属性名$=属性值]
+		属性文本包含选择器	[属性名*=属性值]
+		伪类选择器
+			:link		只能用在a标签上面
+			:visited	只能用在a标签上面
+			:hover		可以用在其它元素上面
+			:active		可以用在其它元素上面
+			:enabled
+			:disabled
+			:checked
+			:first-child 选择作为子元素的第一个元素
+			:last-child
+			:nth-child(表达式(2n+1)/odd/even)
+			:nth-last-child()
+			:only-child
+			:first-of-type
+			:last-of-type
+			:nth-of-type()
+			:nth-last-of-type()
+			:only-of-type
+			:empty			不包含子元素的元素
+			:root			html元素
+			:not()			不包含某些值的元素
+			:target			锚点
+			:lang()			特定语言
+	伪元素选择器-以两个冒号开头
+		::first-letter
+		::first-line
+		::before{content:"..."}
+		::after{content:"..."}
+		::selection				被用户选择的内容
+	组合选择器
+		后代选择器
+			selector1 selector2{}
+		子选择器
+			selector>child
+		兄弟选择器
+			selector1+selector2{}	对selector2生效
+			selector1~selector2{}
+	选择器分组
+		使用逗号将选择器隔开
+	属性的继承
+		可继承，不可继承。
+	选择器的优先级
+		a--行内样式--1000
+		b--id选择器--100
+		c--类、伪类、属性选择器--10
+		d--标签选择器和伪元素选择器--1
+	改变选择器的优先级
+		改变元素先后顺序
+		提升选择器的优先级
+		使用!important		加在属性值后，引号之前。color:red !important;
+lineheight的继承
+	%时，先计算后继承
+	数字时，直接继承
+margin合并
+	相邻元素的margin会合并
+	父元素和第一个/最后一个子元素的margin会合并
+position
+	relative
+		仍在文档流中
+		参照物为元素本身
+		使用场景：作为绝对定位元素的参照物
+	absolute
+		默认宽度为内容宽度
+		脱离文档流
+		参照物为第一个定位祖先/根元素(html)
+	fixed
+		默认宽度为内容宽度
+		脱离文档流
+		参照物为窗口
+float
+	默认宽度为内容宽度
+	半脱离文档流
+		对元素，脱离文档流
+		对内容，在文档流
+	向指定方向一直移动
+	float的元素在同一文档流中

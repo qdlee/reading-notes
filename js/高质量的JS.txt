@@ -1,0 +1,61 @@
+养成良好的编程习惯
+	团队合作-如何避免冲突
+		避免全局变量冲突
+			使用立即执行的匿名函数脚本包起来，使变量成为局部变量。
+			全局范围内的变量用来在函数间交换数据，作为函数间的桥梁
+			使用命名空间来避免全局变量冲突，入口是GLOBAL
+			生成命名空间函数
+			var GLOBAL = {};
+			GLOBAL.namespace = function(name){
+				var arr = name.split(".");
+				var obj = GLOBAL;
+				for(i=(arr[0]==="GLOBAL")?1:0; i<arr.length;i++){
+					obj[arr[i]] = obj[arr[i]] || {};
+					obj = obj[arr[i]];
+				}
+			};
+		给代码添加注释
+		window.onload和DOM ready
+			window.onload是页面加载完成才触发，包括页面中的图片等
+			DOM ready是文档结构加载完成就触发
+			应使用DOM ready
+			将script标签放在页面底部也可以达到同样的效果。
+		css文件放在页头，js文件放在页尾
+		JS文件压缩----packer/YUI
+		js文件反压缩---jsbeautifier.org
+JS的分层
+	怎样分层
+		base层
+			封装不同浏览器下JS的差异，提供统一接口
+			扩展JS语言底层提供的接口
+		common层
+			提供可复用的组件，可重用的一个功能
+		page层
+			完成页面功能
+	可以使用document.all来判断浏览器的类型，IE支持，其它浏览器不支持。(不能使用)
+prototype扩展
+	内置类的方法可以被覆盖，内置类的属性不可以被覆盖
+	扩展内置类的一种方式：定义一个自定义类，将内置类的对象作为参数传入自定义类，并扩展自定义的prototype方法。
+标签的自定义属性
+	对于常规属性统一使用node.xxx来读取，对于自定义发生统一使用getAttribute(xxx)来读取。
+标签内联事件中的event对象
+	内联事件中，event对象不会作为参数传递给处理函数，可以通过显示指定event关键字来传递event对象。
+利用事件冒泡(事件委托)
+	可以通过给父元素添加事件监听器来监听子元素产生的事件，可以减少代码量，提高性能。
+改变DOM样式的三种方式
+	使用元素的style属性
+	通过元素的class属性
+	通过添加style元素，添加大量CSS代码
+		function addStyleNode(str){
+			var styleNode = document.createElement("style");
+			styleNode.type="text/css";
+			if(styleNode.styleSheet){//IE下
+				styleNode.styleSheet.cssText = str;
+			}else{
+				styleNode.innerHTML = str;
+			}
+		}
+this的指向
+	setinterval/settimeout时----window
+	on...时---指向触发事件的元素
+

@@ -1,0 +1,77 @@
+#msgWrap{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 10000;
+    font-family: "微软雅黑";
+    background-color: rgba(0,0,0,0.5);
+}
+
+#msgBox{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 10001;
+    width: 6.25rem;
+    background-color: #333;
+    border-radius: 15px;
+    color: #fff;
+    text-align: center;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#msgTitle{
+    padding-top: 0.625rem;
+    height: 20px;
+    line-height: 20px;
+    vertical-align: bottom;
+    margin: 0;
+    font-size: 20px;
+    -webkit-user-select:none;
+}
+#msgContent{
+    padding:.47rem 0.625rem;
+    min-height: 2rem;
+    margin: 0;
+    font-size:16px;
+    text-align: left;
+    box-sizing: border-box;
+    -webkit-user-select:none;
+}
+#msgButton{
+    height: 1.125rem;
+    box-sizing: border-box;
+    display: flex;
+    display: -webkit-box;
+}
+#btnCancle{
+    position: relative;
+}
+#btnCancle:before{
+    position: absolute;
+    right:-1px;
+    top:0;
+    display:block;
+    content:"";
+    width:1px;
+    height:100%;
+    background-color: #b89d32;
+    transform: scaleX(.5);
+}
+.msg_btn{
+    flex: 1;
+    -webkit-box-flex:1;
+    box-sizing: border-box;
+    display: block;
+    height: 1.125rem;
+    line-height: 1.125rem;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    background-color: #ffd946;
+    cursor:pointer;
+    -webkit-user-select:none;
+}

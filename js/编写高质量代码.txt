@@ -1,0 +1,100 @@
+浏览器的怪异模式
+            对CSS的解析是非标准的，通过加DTD来解决(Doctype)
+      2.  如何组织CSS
+            base+common+page
+            base：提供CSS reset和功能最小的通用类-原子类。与具体UI无关，力求精简和通用，被所有页面引用。
+            common：将大量重用的模块提取出来，放在一个CSS文件中。
+            page：每个具体页面的CSS。
+       3.  CSS模块化
+            如何组织模块
+                模块与模块之间尽量不要包含相同的部分，如果有相同的部分，应将它们提取出来，组成单独的模块。
+                模块应该在保证数量尽可能少的原则下，做到尽可能简单，以提高重用性。
+       4. class的命名
+                使用英文单词，不使用拼音缩写
+                使用两个及两个以上的单词时，使用驼峰命名法或者下划线命名法。（作者推荐两种方法联合使用）
+                避免滥用子选择器，应使用命名新的class来代替。从属关系用下划线来表示。.timeList .lastItem =>.timeList_lastItem
+                多人协同开发时，在命名前加前缀以示区分。
+        5. 挂多个class还是新建class，多用组合，少用继承
+                将元素中相同的属性提取出来，封装到单独的class里面。可以减少css代码，并有很好的扩展性。
+        6. 如何处理上下margin
+                如果模块的上下margin不是特别确定，最好不要将其写到模块的class里面，而是使用class的组合，单独为上下margin挂载原
+                子类(例如mb10,mt20)。模块最好不要滥用margin-top和margin-bottom。统一使用margin-top或者margin-bottom。
+        7. CSS Sprite
+                图片翻转技术
+                    将默认状态和滑过状态的两张图片合并在一起，通过改变背景图的background-positon属性在指定大小的容器里展示部分
+                    背景图。
+        8. id和class
+                建议尽量多用class，少用id
+        9.  CSS hack
+                  IE条件注释法
+    <!--[if IE]>
+    <link rel="stylesheet" href="style.css">
+    <![endif]-->
+    只对特定版本生效
+    <!--[if IE 6]>
+    <link rel="stylesheet" href="style.css">
+    <![endif]-->
+    使用符号
+    lte:小于等于；lt:小于；gte:大于等于；gt:大于；!:不等于。
+    <!--[if gt IE 6]>
+    <link rel="stylesheet" href="style.css">
+    <![endif]-->
+    条件注释内部还可以使用style标签样式和js代码
+选择符前缀法 
+ IE6	*html
+ IE7 *+html
+样式属性前缀法
+ IE6 _(下划线)
+ IE7,IE7	*(星号)
+10. 超链接访问后hover样式不出现的问题
+ 如果同时设置了a:visited和a:hover样式，但在点击链接之后，hover的样式不再出现，
+ 是因为a:visited和a:hover的顺序放反了。
+ 正确的顺序：lvha
+ 11. hasLayout
+ 用于辅助块级元素的盒模型解析。
+ 怎样触发hasLayout
+ 首选zoom:1;无效时设置position:relative;
+  12. 行内元素和块级元素
+ 行内元素水平方向的margin和padding会产生效果，垂直方向的值虽然会设置，但不会有效果。
+  13. IE6,IE7中的inline-block
+ 它们本身不支持这个属性，但可以通过给行内元素触发hasLayout发生的方式来达到同样的效果。
+ 操作：给行内元素添加display:inline-block;或者zoom:1;因为要兼容其它浏览器，所以使用前者。
+
+居中
+	水平居中
+		行内元素的水平居中--设置父元素的text-align:center;
+		确定宽度的块级元素--设置margin-left:auto;和margin-right:auto;
+		不确定宽度的块级元素
+			1、在要设置的元素外面套一个table元素，
+			   并设置table元素的margin-left:auto;和margin-right:auto;
+			2、设置父元素position:relative;left:50%,设置子元素position:relative;left:-50%;
+			3、将元素的display:inline;然后使用text-align:center;
+	垂直居中
+		父元素不设置高度的--给父元素设置同样的上下padding值
+		父元素高度确定的单行文本--通过给父元素设置line-height:父元素height;
+		父元素高度确定的多行文本、图片块级元素
+			1、使用table元素，并设置vertical-align:middle;
+			2、设置元素的display:table-cell，并设置vertical-align:middle;
+				对于IE6,IE7，采用3层嵌套，最外层设置position:relative;
+				父元素设置positon:absolute;top:50%;字元素设置position:relative;top:-50%;
+        使用css3方案
+            position:absolute;
+            top:50%;
+            left:50%;
+            z-index:3;
+            transform:translate(-50%,-50%);
+	网格布局
+		要将主要的模块放在前面，使其优先被加载。
+		只在最外层的窗口给定具体宽度，所有其他容器的宽度均使用百分比设置，
+		这种方式的布局极具灵活性，叫做网格布局。
+	flash与IE6下的select与z-index
+		浏览器在解析页面前，会先判定元素的类型，如果是窗口类型的会优于非窗口类型的元素，
+		显示在页面最顶端，如果同属非窗口类型的，才会去判断z-index的顺序。
+		flash有一个wmode属性，用于指定窗口模式。
+		IE6下的select元素也显示为窗口类型。
+		用一个同样大小的iframe放在test下面，select上面，用iframe遮住select.
+		#test{z-index: 2;}
+		#testMask{z-index: 1;}
+		<select></select>
+		<div id="test"></div>
+		<iframe id="testMask"></iframe>
