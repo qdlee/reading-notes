@@ -113,5 +113,267 @@ const myComponentInstance = new myComponent();
 
 ### 指令的缩写
 
-v-bind => :
-v-on => @
+* v-bind => :
+* v-on => @
+
+## 计算属性
+
+* 用于需要对属性进行复杂逻辑操作的地方。
+* 用于需要根据多个值来计算当前属性值的情况。
+* 计算属性依赖于其它属性，在其它属性值改变时，计算属性的值也随之改变。
+````html
+<div id="example">
+  <p>Original message: "{{ message }}"</p>
+  <p>Computed reversed message: "{{ reversedMessage }}"</p>
+</div>
+````
+````js
+var vm = new Vue({
+  el: '#example',
+  data: {
+    message: 'Hello'
+  },
+  computed: {
+    // a computed getter
+    reversedMessage: function () {
+      // `this` points to the vm instance
+      return this.message.split('').reverse().join('')
+    }
+  }
+})
+````
+
+### 计算属性VS方法
+
+计算属性会缓存它的值，只有当它的依赖属性的值发生变化时才会重新进行计算，在执行较重的任务时，可以提高性能。方法每次都会进行计算。
+
+### 计算属性的setter方法
+
+默认情况下计算属性是只读的，但也可以通过提供setter方法来改变它的值
+````js
+// ...
+computed: {
+  fullName: {
+    // getter
+    get: function () {
+      return this.firstName + ' ' + this.lastName
+    },
+    // setter
+    set: function (newValue) {
+      var names = newValue.split(' ')
+      this.firstName = names[0]
+      this.lastName = names[names.length - 1]
+    }
+  }
+}
+// ...
+````
+## 属性监视器
+
+* 用于监视单个属性。
+* 当对某个属性的改变进行一个异步操作或者较重的操作时尤其有用。
+
+````html
+<div id="watch-example">
+  <p>
+    Ask a yes/no question:
+    <input v-model="question">
+  </p>
+  <p>{{ answer }}</p>
+</div>
+
+<!-- Since there is already a rich ecosystem of ajax libraries    -->
+<!-- and collections of general-purpose utility methods, Vue core -->
+<!-- is able to remain small by not reinventing them. This also   -->
+<!-- gives you the freedom to just use what you're familiar with. -->
+<script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+<script>
+var watchExampleVM = new Vue({
+  el: '#watch-example',
+  data: {
+    question: '',
+    answer: 'I cannot give you an answer until you ask a question!'
+  },
+  watch: {
+    // whenever question changes, this function will run
+    question: function (newQuestion) {
+      this.answer = 'Waiting for you to stop typing...'
+      this.getAnswer()
+    }
+  },
+  methods: {
+    // _.debounce is a function provided by lodash to limit how
+    // often a particularly expensive operation can be run.
+    // In this case, we want to limit how often we access
+    // yesno.wtf/api, waiting until the user has completely
+    // finished typing before making the ajax request. To learn
+    // more about the _.debounce function (and its cousin
+    // _.throttle), visit: https://lodash.com/docs#debounce
+    getAnswer: _.debounce(
+      function () {
+        if (this.question.indexOf('?') === -1) {
+          this.answer = 'Questions usually contain a question mark. ;-)'
+          return
+        }
+        this.answer = 'Thinking...'
+        var vm = this
+        axios.get('https://yesno.wtf/api')
+          .then(function (response) {
+            vm.answer = _.capitalize(response.data.answer)
+          })
+          .catch(function (error) {
+            vm.answer = 'Error! Could not reach the API. ' + error
+          })
+      },
+      // This is the number of milliseconds we wait for the
+      // user to stop typing.
+      500
+    )
+  }
+})
+</script>
+````
+
+## class和style绑定
+
+### class绑定
+* v-bind:class=""
+* 可以和class属性一同使用
+#### 对象语法
+
+class名称：布尔型变量。在布尔变量为true时添加。
+````html
+<div class="static"
+     v-bind:class="{ active: isActive, 'text-danger': hasError }">
+</div>
+<script>
+    data: {
+        isActive: true,
+        hasError: false
+    }
+</script>
+````
+
+#### 数组语法
+
+[class属性变量...]
+
+````html
+<div v-bind:class="[activeClass, errorClass]">
+<div v-bind:class="[isActive ? activeClass : '', errorClass]">
+<div v-bind:class="[{ active: isActive }, errorClass]">
+<script>
+    data: {
+        isActive: true,
+        activeClass: 'active',
+        errorClass: 'text-danger'
+    }
+</script>
+````
+#### 和组件一起使用
+
+当给自定义组件添加**class**属性时，这些属性会被添加到组件的要元素上，根元素上已经存在的属性不会被覆盖。
+
+### 行内样式绑定
+
+* v-bind:style=""
+
+#### 对象语法
+````html
+<div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
+<script>
+    data: {
+        activeColor: 'red',
+        fontSize: 30
+    }
+</script>
+<div v-bind:style="styleObject"></div>
+<script>
+    data: {
+        styleObject: {
+            color: 'red',
+            fontSize: '13px'
+        }
+    }
+</script>
+````
+
+#### 数组语法
+
+可以应用多个对象。
+
+#### 自动浏览器前缀
+
+会给需要浏览器前缀的属性自动添加浏览器前缀。
+
+#### 多个值
+
+可以给某个属性提供一个数组，数组中包含多个与浏览器相关的值，这只会渲染浏览器支持的最后一个值。
+
+````html
+<div v-bind:style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }">
+````
+
+## 条件渲染
+
+### v-if
+### v-else-if
+### v-else
+
+````html
+<div v-if="type === 'A'">
+  A
+</div>
+<div v-else-if="type === 'B'">
+  B
+</div>
+<div v-else-if="type === 'C'">
+  C
+</div>
+<div v-else>
+  Not A/B/C
+</div>
+````
+
+### 和<template>一起使用
+
+用于多于一个元素的情况
+
+````html
+<template v-if="ok">
+  <h1>Title</h1>
+  <p>Paragraph 1</p>
+  <p>Paragraph 2</p>
+</template>
+````
+
+### 使用**key**来控制元素重用
+
+Vue在进行切换的时候，会重用某些可以重用的元素，而不是重新进行渲染。如果要不让Vue进行元素的重用，可以给元素加上**key**属性，对元素进行唯一标识。
+
+````html
+<template v-if="loginType === 'username'">
+  <label>Username</label>
+  <input placeholder="Enter your username" key="username-input">
+</template>
+<template v-else>
+  <label>Email</label>
+  <input placeholder="Enter your email address" key="email-input">
+</template>
+````
+
+### v-show
+
+* 初始化时就会对元素进行渲染，通过css的display属性进行显示隐藏控制。
+* 不能用于<template>元素，也不能使用**v-else**
+
+### **v-if** VS **v-show**
+
+* **v-if**是真正的条件渲染，它会确保条件块内的事件监听及子组件被销毁并重新创建。
+* 只有当条件为真时，**v-if**条件块内的元素才会被渲染。
+* **v-if**有更高的切换开销；**v-show**有更高的初始渲染开销。
+
+### **v-if** 和 **v-for**
+
+* **v-for**的优先级高于**v-if**
