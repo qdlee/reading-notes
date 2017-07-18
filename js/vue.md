@@ -377,3 +377,57 @@ Vue在进行切换的时候，会重用某些可以重用的元素，而不是�
 ### **v-if** 和 **v-for**
 
 * **v-for**的优先级高于**v-if**
+
+## 列表渲染
+
+* 使用**v-for**指令
+* 语法是`item in items`,其中**in**可以用**of**代替
+* **v-for**中可以访问父级作用域中的属性
+* 可以为**v-for**指定一个index属性作为当前迭代值的索引
+
+````html
+  <li v-for="item in items">
+    {{ item.message }}
+  </li>
+
+  <li v-for="(item, index) in items">
+    {{ parentMessage }} - {{ index }} - {{ item.message }}
+  </li>
+
+  <div v-for="item of items"></div>
+````
+
+### Template v-for
+
+````html
+<ul>
+  <template v-for="item in items">
+    <li>{{ item.msg }}</li>
+    <li class="divider"></li>
+  </template>
+</ul>
+````
+### Object v-for
+
+````html
+  <li v-for="value in object">
+    {{ value }}
+  </li>
+
+  <div v-for="(value, key) in object">
+    {{ key }} : {{ value }}
+  </div>
+
+  <div v-for="(value, key, index) in object">
+    {{ index }}. {{ key }} : {{ value }}
+  </div>
+````
+
+### Range v-for
+
+````html
+  <div>
+    <span v-for="n in 10">{{ n }} </span>
+  </div>
+````
+
