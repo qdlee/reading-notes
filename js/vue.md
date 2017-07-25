@@ -527,3 +527,104 @@ methods: {
 }
 ```
 
+## 事件处理
+
+* 使用`v-on`指令来监听事件，`v-on`可以简写为`@`
+* `v-on`的值可以是js表达式
+* `v-on`的值可以是一个方法名，默认的参数是事件对象
+* `v-on`的值可以是对方法的调用，这时可以显式的使用`$event`作为事件对象参数传递给方法。
+
+```html
+ <button v-on:click="counter += 1">Add 1</button>
+
+   <!-- `greet` is the name of a method defined below -->
+  <button v-on:click="greet">Greet</button>
+
+  <button v-on:click="say('hi')">Say hi</button>
+  <button v-on:click="warn('Form cannot be submitted yet.', $event)">
+  Submit
+</button>
+```
+### 事件修饰符
+
+* 用来简化一些通用操作。
+* 修饰符的顺序会对结果有影响
+
+* `.stop`
+* `.prevent`
+* `.capture`
+* `.self`
+* `.once`，可以用在组件上面
+
+```html
+<!-- the click event's propagation will be stopped -->
+<a v-on:click.stop="doThis"></a>
+<!-- the submit event will no longer reload the page -->
+<form v-on:submit.prevent="onSubmit"></form>
+<!-- modifiers can be chained -->
+<a v-on:click.stop.prevent="doThat"></a>
+<!-- just the modifier -->
+<form v-on:submit.prevent></form>
+<!-- use capture mode when adding the event listener -->
+<!-- i.e. an event targeting an inner element is handled here before being handled by that element -->
+<div v-on:click.capture="doThis">...</div>
+<!-- only trigger handler if event.target is the element itself -->
+<!-- i.e. not from a child element -->
+<div v-on:click.self="doThat">...</div>
+
+<!-- the click event will be triggered at most once -->
+<a v-on:click.once="doThis"></a>
+```
+
+### 按键修饰符
+
+可以使用keycode来监听键盘事件
+
+```html
+<!-- only call vm.submit() when the keyCode is 13 -->
+<input v-on:keyup.13="submit">
+```
+
+对于一些常用的按键，为了便于记忆，给它们起了别名
+
+* `.enter`
+* `.tab`
+* `.delete`，捕获`Delete`和`Backspace`两个键
+* `.esc`
+* `.space`
+* `.up`
+* `.down`
+* `.left`
+* `.right`
+
+可以自定义按键修饰符
+
+```js
+// enable v-on:keyup.f1
+Vue.config.keyCodes.f1 = 112
+```
+
+### 修饰符按键
+
+用于组合按键。
+
+只有当这些键处于按下状态，再去按另一个键时，都会触发事件。
+
+* `.ctrl`
+* `.alt`
+* `.shift`
+* `.meta`，所在操作系统的专有键
+
+```html
+<!-- Alt + C -->
+<input @keyup.alt.67="clear">
+<!-- Ctrl + Click -->
+<div @click.ctrl="doSomething">Do something</div>
+```
+
+### 鼠标按键修饰符
+
+* `.left`
+* `.right`
+* `.middle`
+
