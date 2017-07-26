@@ -628,3 +628,189 @@ Vue.config.keyCodes.f1 = 112
 * `.right`
 * `.middle`
 
+## 表单输入绑定
+
+* 使用`v-model`指令在表单的`input`、`select`和`textarea`元素上创建双向数据绑定
+* `v-model`会忽略`value`, `checked`,`selected`属性的初始值，需要使用`data`来初始化
+* 对于需要IME的语言，在输入的过程中，`v-model`不会更新。如果需要在输入的时候获取值，需要绑定`input`事件
+
+### 文本
+
+```html
+<input v-model="message" placeholder="edit me">
+<p>Message is: {{ message }}</p>
+```
+
+### 多行文本（textarea)
+
+```html
+<span>Multiline message is:</span>
+<p style="white-space: pre-line">{{ message }}</p>
+<br>
+<textarea v-model="message" placeholder="add multiple lines"></textarea>
+```
+
+### checkbox
+
+```html
+<input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+<label for="jack">Jack</label>
+<input type="checkbox" id="john" value="John" v-model="checkedNames">
+<label for="john">John</label>
+<input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+<label for="mike">Mike</label>
+<br>
+<span>Checked names: {{ checkedNames }}</span>
+```
+
+```js
+new Vue({
+  el: '...',
+  data: {
+    checkedNames: []
+  }
+})
+```
+
+### radio
+
+```html
+<input type="radio" id="one" value="One" v-model="picked">
+<label for="one">One</label>
+<br>
+<input type="radio" id="two" value="Two" v-model="picked">
+<label for="two">Two</label>
+<br>
+<span>Picked: {{ picked }}</span>
+```
+
+### select
+
+如果`select`的初始值没有匹配到`option`，就会显示为未选中状态，在iOS中这样会导致用户不能选中第一个选项，因为这种情况下，iOS不会触发change事件。所以需要给`select`提供一个值为空的禁用状态的`option`
+
+```html
+<select v-model="selected">
+  <option disabled value="">Please select one</option>
+  <option>A</option>
+  <option>B</option>
+  <option>C</option>
+</select>
+<span>Selected: {{ selected }}</span>
+```
+#### 如果是多项选择，`v-model`需要是数组。
+
+```html
+<select v-model="selected" multiple>
+  <option>A</option>
+  <option>B</option>
+  <option>C</option>
+</select>
+<br>
+<span>Selected: {{ selected }}</span>
+```
+#### 使用`v-for`动态渲染`option`
+
+```html
+<select v-model="selected">
+  <option v-for="option in options" v-bind:value="option.value">
+    {{ option.text }}
+  </option>
+</select>
+<span>Selected: {{ selected }}</span>
+```
+
+```js
+new Vue({
+  el: '...',
+  data: {
+    selected: 'A',
+    options: [
+      { text: 'One', value: 'A' },
+      { text: 'Two', value: 'B' },
+      { text: 'Three', value: 'C' }
+    ]
+  }
+})
+```
+
+### 值的绑定
+
+对于`v-model`的值，`select`、`radio`的值是字符串，`checkbox`的值是布尔值。可以使用`v-bind`来绑定Vue实例上的属性，来实现非字符串值。
+
+```html
+<!-- `picked` is a string "a" when checked -->
+<input type="radio" v-model="picked" value="a">
+<!-- `toggle` is either true or false -->
+<input type="checkbox" v-model="toggle">
+<!-- `selected` is a string "abc" when selected -->
+<select v-model="selected">
+  <option value="abc">ABC</option>
+</select>
+```
+
+#### checkbox
+
+```html
+<input
+  type="checkbox"
+  v-model="toggle"
+  v-bind:true-value="a"
+  v-bind:false-value="b"
+>
+```
+
+```js
+// when checked:
+vm.toggle === vm.a
+// when unchecked:
+vm.toggle === vm.b
+```
+#### radio
+
+```html
+<input type="radio" v-model="pick" v-bind:value="a">
+```
+
+```js
+// when checked:
+vm.pick === vm.a
+```
+#### select
+
+```html
+<select v-model="selected">
+  <!-- inline object literal -->
+  <option v-bind:value="{ number: 123 }">123</option>
+</select>
+```
+
+```js
+// when selected:
+typeof vm.selected // -> 'object'
+vm.selected.number // -> 123
+```
+
+### 修饰符
+
+#### `.lazy`
+
+在`change`事件时才同步数据
+
+```html
+<!-- synced after "change" instead of "input" -->
+<input v-model.lazy="msg" >
+```
+#### `.number`
+
+把输入值转换为数字
+
+```html
+<input v-model.number="age" type="number">
+```
+#### `.trim`
+
+去除输入值前后的空格
+
+```html
+<input v-model.trim="msg">
+```
