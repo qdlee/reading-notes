@@ -400,3 +400,440 @@ Vue在进行切换的时候，会重用某些可以重用的元素，而不是�
 ### **v-if** 和 **v-for**
 
 * **v-for**的优先级高于**v-if**
+
+## 列表渲染
+
+* 使用**v-for**指令
+* 语法是`item in items`,其中**in**可以用**of**代替
+* **v-for**中可以访问父级作用域中的属性
+* 可以为**v-for**指定一个index属性作为当前迭代值的索引
+
+````html
+  <li v-for="item in items">
+    {{ item.message }}
+  </li>
+
+  <li v-for="(item, index) in items">
+    {{ parentMessage }} - {{ index }} - {{ item.message }}
+  </li>
+
+  <div v-for="item of items"></div>
+````
+
+### Template v-for
+
+````html
+<ul>
+  <template v-for="item in items">
+    <li>{{ item.msg }}</li>
+    <li class="divider"></li>
+  </template>
+</ul>
+````
+### Object v-for
+
+````html
+  <li v-for="value in object">
+    {{ value }}
+  </li>
+
+  <div v-for="(value, key) in object">
+    {{ key }} : {{ value }}
+  </div>
+
+  <div v-for="(value, key, index) in object">
+    {{ index }}. {{ key }} : {{ value }}
+  </div>
+````
+
+### Range v-for
+
+````html
+  <div>
+    <span v-for="n in 10">{{ n }} </span>
+  </div>
+````
+
+### 组件和`v-for`
+
+* 可以像普通元素那样对组件使用v-for
+* 需要给组件提供一个`key`属性，用来唯一标识每一项
+* 迭代的项目不会直接在组件中使用，需要使用`props`来进行传递
+
+```html
+  <my-component
+    v-for="(item, index) in items"
+    v-bind:item="item"
+    v-bind:index="index"
+    v-bind:key="item.id">
+  </my-component>
+```
+
+### `key`属性
+
+Vue默认使用一个叫做`in-place patch`的策略来更新`v-for`列表。当列表元素的顺序改变时，Vue不会重新排列DOM元素，而是就地改变DOM元素，使之符合当前所对应的列表项目。但这种方式不能依赖子组件状态和临时DOM状态。
+
+要让Vue追踪每个元素，以此来重用或者重新排列已有元素，需要给每一个元素提供一个`key`，用作唯一标识符。推荐给每一个`v-for`元素都提供`key`属性。
+
+### 数组改变的探测
+
+Vue包装了一些数组方法，在执行这些方法时会触发视图更新。
+* `push()`
+* `pop()`
+* `shift()`
+* `unshift()`
+* `splice()`
+* `sort()`
+* `reverse()`
+
+#### 替换数组
+
+有一些数据操作不会改变原数据，而是会返回一个新的数组。例如`filter()`,`concat()`和`slice()`,当执行这些操作时可以直接用新数组来替换旧的数组。
+
+#### 警告
+
+由于js的限制，Vue检测不到下面两种数据的改变
+
+1. 直接通过索引来设置元素的值
+2. 改变数组的长度
+
+解决方法
+
+1. 
+```js
+// Vue.set
+Vue.set(example1.items, indexOfItem, newValue)
+
+// Array.prototype.splice
+example1.items.splice(indexOfItem, 1, newValue)
+```
+2. 
+```js
+example1.items.splice(newLength)
+```
+
+### 显示过滤/排序过的结果
+
+使用计算属性
+```html
+<li v-for="n in evenNumbers">{{ n }}</li>
+```
+```js
+data: {
+  numbers: [ 1, 2, 3, 4, 5 ]
+},
+computed: {
+  evenNumbers: function () {
+    return this.numbers.filter(function (number) {
+      return number % 2 === 0
+    })
+  }
+}
+```
+
+对于不适合使用计算使用的情况(例如嵌套的`v-for`)，使用方法
+
+```html
+<li v-for="n in even(numbers)">{{ n }}</li>
+```
+
+```js
+data: {
+  numbers: [ 1, 2, 3, 4, 5 ]
+},
+methods: {
+  even: function (numbers) {
+    return numbers.filter(function (number) {
+      return number % 2 === 0
+    })
+  }
+}
+```
+
+## 事件处理
+
+* 使用`v-on`指令来监听事件，`v-on`可以简写为`@`
+* `v-on`的值可以是js表达式
+* `v-on`的值可以是一个方法名，默认的参数是事件对象
+* `v-on`的值可以是对方法的调用，这时可以显式的使用`$event`作为事件对象参数传递给方法。
+
+```html
+ <button v-on:click="counter += 1">Add 1</button>
+
+   <!-- `greet` is the name of a method defined below -->
+  <button v-on:click="greet">Greet</button>
+
+  <button v-on:click="say('hi')">Say hi</button>
+  <button v-on:click="warn('Form cannot be submitted yet.', $event)">
+  Submit
+</button>
+```
+### 事件修饰符
+
+* 用来简化一些通用操作。
+* 修饰符的顺序会对结果有影响
+
+* `.stop`
+* `.prevent`
+* `.capture`
+* `.self`
+* `.once`，可以用在组件上面
+
+```html
+<!-- the click event's propagation will be stopped -->
+<a v-on:click.stop="doThis"></a>
+<!-- the submit event will no longer reload the page -->
+<form v-on:submit.prevent="onSubmit"></form>
+<!-- modifiers can be chained -->
+<a v-on:click.stop.prevent="doThat"></a>
+<!-- just the modifier -->
+<form v-on:submit.prevent></form>
+<!-- use capture mode when adding the event listener -->
+<!-- i.e. an event targeting an inner element is handled here before being handled by that element -->
+<div v-on:click.capture="doThis">...</div>
+<!-- only trigger handler if event.target is the element itself -->
+<!-- i.e. not from a child element -->
+<div v-on:click.self="doThat">...</div>
+
+<!-- the click event will be triggered at most once -->
+<a v-on:click.once="doThis"></a>
+```
+
+### 按键修饰符
+
+可以使用keycode来监听键盘事件
+
+```html
+<!-- only call vm.submit() when the keyCode is 13 -->
+<input v-on:keyup.13="submit">
+```
+
+对于一些常用的按键，为了便于记忆，给它们起了别名
+
+* `.enter`
+* `.tab`
+* `.delete`，捕获`Delete`和`Backspace`两个键
+* `.esc`
+* `.space`
+* `.up`
+* `.down`
+* `.left`
+* `.right`
+
+可以自定义按键修饰符
+
+```js
+// enable v-on:keyup.f1
+Vue.config.keyCodes.f1 = 112
+```
+
+### 修饰符按键
+
+用于组合按键。
+
+只有当这些键处于按下状态，再去按另一个键时，都会触发事件。
+
+* `.ctrl`
+* `.alt`
+* `.shift`
+* `.meta`，所在操作系统的专有键
+
+```html
+<!-- Alt + C -->
+<input @keyup.alt.67="clear">
+<!-- Ctrl + Click -->
+<div @click.ctrl="doSomething">Do something</div>
+```
+
+### 鼠标按键修饰符
+
+* `.left`
+* `.right`
+* `.middle`
+
+## 表单输入绑定
+
+* 使用`v-model`指令在表单的`input`、`select`和`textarea`元素上创建双向数据绑定
+* `v-model`会忽略`value`, `checked`,`selected`属性的初始值，需要使用`data`来初始化
+* 对于需要IME的语言，在输入的过程中，`v-model`不会更新。如果需要在输入的时候获取值，需要绑定`input`事件
+
+### 文本
+
+```html
+<input v-model="message" placeholder="edit me">
+<p>Message is: {{ message }}</p>
+```
+
+### 多行文本（textarea)
+
+```html
+<span>Multiline message is:</span>
+<p style="white-space: pre-line">{{ message }}</p>
+<br>
+<textarea v-model="message" placeholder="add multiple lines"></textarea>
+```
+
+### checkbox
+
+```html
+<input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+<label for="jack">Jack</label>
+<input type="checkbox" id="john" value="John" v-model="checkedNames">
+<label for="john">John</label>
+<input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+<label for="mike">Mike</label>
+<br>
+<span>Checked names: {{ checkedNames }}</span>
+```
+
+```js
+new Vue({
+  el: '...',
+  data: {
+    checkedNames: []
+  }
+})
+```
+
+### radio
+
+```html
+<input type="radio" id="one" value="One" v-model="picked">
+<label for="one">One</label>
+<br>
+<input type="radio" id="two" value="Two" v-model="picked">
+<label for="two">Two</label>
+<br>
+<span>Picked: {{ picked }}</span>
+```
+
+### select
+
+如果`select`的初始值没有匹配到`option`，就会显示为未选中状态，在iOS中这样会导致用户不能选中第一个选项，因为这种情况下，iOS不会触发change事件。所以需要给`select`提供一个值为空的禁用状态的`option`
+
+```html
+<select v-model="selected">
+  <option disabled value="">Please select one</option>
+  <option>A</option>
+  <option>B</option>
+  <option>C</option>
+</select>
+<span>Selected: {{ selected }}</span>
+```
+#### 如果是多项选择，`v-model`需要是数组。
+
+```html
+<select v-model="selected" multiple>
+  <option>A</option>
+  <option>B</option>
+  <option>C</option>
+</select>
+<br>
+<span>Selected: {{ selected }}</span>
+```
+#### 使用`v-for`动态渲染`option`
+
+```html
+<select v-model="selected">
+  <option v-for="option in options" v-bind:value="option.value">
+    {{ option.text }}
+  </option>
+</select>
+<span>Selected: {{ selected }}</span>
+```
+
+```js
+new Vue({
+  el: '...',
+  data: {
+    selected: 'A',
+    options: [
+      { text: 'One', value: 'A' },
+      { text: 'Two', value: 'B' },
+      { text: 'Three', value: 'C' }
+    ]
+  }
+})
+```
+
+### 值的绑定
+
+对于`v-model`的值，`select`、`radio`的值是字符串，`checkbox`的值是布尔值。可以使用`v-bind`来绑定Vue实例上的属性，来实现非字符串值。
+
+```html
+<!-- `picked` is a string "a" when checked -->
+<input type="radio" v-model="picked" value="a">
+<!-- `toggle` is either true or false -->
+<input type="checkbox" v-model="toggle">
+<!-- `selected` is a string "abc" when selected -->
+<select v-model="selected">
+  <option value="abc">ABC</option>
+</select>
+```
+
+#### checkbox
+
+```html
+<input
+  type="checkbox"
+  v-model="toggle"
+  v-bind:true-value="a"
+  v-bind:false-value="b"
+>
+```
+
+```js
+// when checked:
+vm.toggle === vm.a
+// when unchecked:
+vm.toggle === vm.b
+```
+#### radio
+
+```html
+<input type="radio" v-model="pick" v-bind:value="a">
+```
+
+```js
+// when checked:
+vm.pick === vm.a
+```
+#### select
+
+```html
+<select v-model="selected">
+  <!-- inline object literal -->
+  <option v-bind:value="{ number: 123 }">123</option>
+</select>
+```
+
+```js
+// when selected:
+typeof vm.selected // -> 'object'
+vm.selected.number // -> 123
+```
+
+### 修饰符
+
+#### `.lazy`
+
+在`change`事件时才同步数据
+
+```html
+<!-- synced after "change" instead of "input" -->
+<input v-model.lazy="msg" >
+```
+#### `.number`
+
+把输入值转换为数字
+
+```html
+<input v-model.number="age" type="number">
+```
+#### `.trim`
+
+去除输入值前后的空格
+
+```html
+<input v-model.trim="msg">
+```
