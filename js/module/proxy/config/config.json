@@ -1,0 +1,11 @@
+{
+  "server": {
+    "port": 8000
+  },
+  "db": {
+    "host": "localhost",
+    "user": "root",
+    "password": "123456",
+    "database": "rap_db"
+  }
+}

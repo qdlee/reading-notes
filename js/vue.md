@@ -11,7 +11,9 @@ const vm = new Vue({
     //options
 });
 ````
+
 ### 扩展vue构造函数
+
 ````js
 const myComponent = Vue.extent({
     //extension options
@@ -28,6 +30,7 @@ const myComponentInstance = new myComponent();
 * 不要在vue实例属性或者回调函数上使用箭头方法，会有this绑定问题
 
 ### vue实例生命周期
+
 ![vue实例生命周期](./lifecycle.png)
 
 ## 模板语法
@@ -42,7 +45,9 @@ const myComponentInstance = new myComponent();
 ````html
 <span>{{msg}}</span>
 ````
+
 可以使用v-once指定使插值不改变，但也会影响节点上绑定的属性
+
 ````html
 <span v-once>{{msg}}</span>
 ````
@@ -58,21 +63,26 @@ const myComponentInstance = new myComponent();
 ### 标签属性
 
 使用v-bind指令定义
+
 ````html
 <div v-bind:id="dynamicId"></div>
 ````
+
 也可以定义布尔属性，值为false时删除属性
+
 ````html
 <button v-bind:disabled="isButtonDisabled">Button</button>
 ````
 
 ### 使用Javascript表达式
+
 ````html
 {{ number + 1 }}
 {{ ok ? 'YES' : 'NO' }}
 {{ message.split('').reverse().join('') }}
 <div v-bind:id="'list-' + id"></div>
 ````
+
 * 只能使用单个表达式，不能使用语句
 * 只能访问白名单中的全局变量，不能访问自定义对象
 
@@ -83,6 +93,7 @@ const myComponentInstance = new myComponent();
 * 跟在要应用的属性之后，以管道符**|**分隔
 * 可以链接使用多个过滤器
 * 过滤器可以接受多个参数，第一个参数为原始文本，从第二个参数开始是传入的参数
+
 ````html
 <!-- in mustaches -->
 {{ message | capitalize }}
@@ -97,6 +108,7 @@ const myComponentInstance = new myComponent();
 ## 指令
 
 以**v-**为前缀的特殊html属性。
+
 ````html
 <a v-bind:href="url"></a>
 
@@ -121,12 +133,14 @@ const myComponentInstance = new myComponent();
 * 用于需要对属性进行复杂逻辑操作的地方。
 * 用于需要根据多个值来计算当前属性值的情况。
 * 计算属性依赖于其它属性，在其它属性值改变时，计算属性的值也随之改变。
+
 ````html
 <div id="example">
   <p>Original message: "{{ message }}"</p>
   <p>Computed reversed message: "{{ reversedMessage }}"</p>
 </div>
 ````
+
 ````js
 var vm = new Vue({
   el: '#example',
@@ -150,6 +164,7 @@ var vm = new Vue({
 ### 计算属性的setter方法
 
 默认情况下计算属性是只读的，但也可以通过提供setter方法来改变它的值
+
 ````js
 // ...
 computed: {
@@ -168,6 +183,7 @@ computed: {
 }
 // ...
 ````
+
 ## 属性监视器
 
 * 用于监视单个属性。
@@ -238,11 +254,14 @@ var watchExampleVM = new Vue({
 ## class和style绑定
 
 ### class绑定
+
 * v-bind:class=""
 * 可以和class属性一同使用
+
 #### 对象语法
 
 class名称：布尔型变量。在布尔变量为true时添加。
+
 ````html
 <div class="static"
      v-bind:class="{ active: isActive, 'text-danger': hasError }">
@@ -271,6 +290,7 @@ class名称：布尔型变量。在布尔变量为true时添加。
     }
 </script>
 ````
+
 #### 和组件一起使用
 
 当给自定义组件添加**class**属性时，这些属性会被添加到组件的要元素上，根元素上已经存在的属性不会被覆盖。
@@ -280,6 +300,7 @@ class名称：布尔型变量。在布尔变量为true时添加。
 * v-bind:style=""
 
 #### 对象语法
+
 ````html
 <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
 <script>
@@ -318,7 +339,9 @@ class名称：布尔型变量。在布尔变量为true时添加。
 ## 条件渲染
 
 ### v-if
+
 ### v-else-if
+
 ### v-else
 
 ````html
@@ -336,7 +359,7 @@ class名称：布尔型变量。在布尔变量为true时添加。
 </div>
 ````
 
-### 和<template>一起使用
+### 和&lt;template&gt;一起使用
 
 用于多于一个元素的情况
 
@@ -366,7 +389,7 @@ Vue在进行切换的时候，会重用某些可以重用的元素，而不是�
 ### v-show
 
 * 初始化时就会对元素进行渲染，通过css的display属性进行显示隐藏控制。
-* 不能用于<template>元素，也不能使用**v-else**
+* 不能用于&lt;template&gt;元素，也不能使用**v-else**
 
 ### **v-if** VS **v-show**
 
