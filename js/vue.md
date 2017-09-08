@@ -837,3 +837,631 @@ vm.selected.number // -> 123
 ```html
 <input v-model.trim="msg">
 ```
+## 组件
+
+### 使用组件
+
+#### 注册组件
+
+使用`Vue.component(tagName, options)`, 注册之后可以当做自定义元素使用。
+
+```html
+<div id="example">
+  <my-component></my-component>
+</div>
+```
+
+```js
+// register
+Vue.component('my-component', {
+  template: '<div>A custom component!</div>'
+})
+// create a root instance
+new Vue({
+  el: '#example'
+})
+```
+
+结果
+
+```html
+<div id="example">
+  <div>A custom component!</div>
+</div>
+```
+
+#### 本地注册组件
+
+* 可以在某个组件内注册组件，使被注册组件只能在其父组件内使用。
+* 使用`components`属性
+
+```js
+var Child = {
+  template: '<div>A custom component!</div>'
+}
+new Vue({
+  // ...
+  components: {
+    // <my-component> will only be available in parent's template
+    'my-component': Child
+  }
+})
+```
+
+#### DOM模板解析警告
+
+在HTML中对一些标签中能够出现的标签有限制，例如：`ul`,`ol`,`table`,`select`，有一些标签只能出现在特定的标签之内，例如：`option`。
+
+这种情况会引起错误
+
+```html
+<table>
+  <my-row>...</my-row>
+</table>
+```
+
+变通方案：使用`is`属性
+
+```html
+<table>
+  <tr is="my-row"></tr>
+</table>
+```
+
+在以下三种情况下使用模板字符串不会受限制
+
+* `<script type="text/x-template">`
+* javascript行内模板字符
+* `.vue`组件
+
+#### `data`必须是函数
+
+如果直接返回data对象，那么当多次使用一个组件时，这几个组件有可能会共用同一个数据，造成数据污染。
+
+### props
+
+#### 使用`props`来传递数据
+
+* 使用`props`将数据传递到子组件
+* 需要在子组件上显式地声明`props`属性
+* 如果组件中的属性名是驼峰方式命名的，html中的属性需要是边字符命名的
+* 模板语法不受此命名限制
+* 可以使用`v-bind`来传递动态属性
+* 使用字面量语法传递的数据是`string`类型的，如果要传递特定类型的数据需要使用`v-bind`
+
+```js
+Vue.component('child', {
+  // declare the props
+  props: ['message', 'myMessage', 'dyMessage'],
+  // just like data, the prop can be used inside templates
+  // and is also made available in the vm as this.message
+  template: '<span>{{ message }}</span>'
+})
+```
+
+父组件通过标签属性的方式传递数据
+
+```html
+<input v-model="parentMsg">
+<child message="hello!" my-message="hello!" :dyMessage="parentMsg"></child>
+```
+
+#### 单向数据流
+
+`prop`在父组件和子组件之间形成了一个单向数据流，当父组件的属性值改变时，会传递到子组件。不可以直接在子组件中修改`props`中的属性值。
+
+如果`props`传递的是引用型数据，那么在子组件中对数据的改变会影响到父组件。
+
+两种特殊情况
+
+1. `props`只用来传递初始值，子组件要将其作为本地属性使用。
+2. `props`传递了一个需要被转换的原始值
+
+解决方案
+
+1. 定义一个本地属性，使用`props`的值作为它的初始值
+
+```js
+props: ['initialCounter'],
+data: function () {
+  return { counter: this.initialCounter }
+}
+```
+
+2. 定义一个计算属性
+
+```js
+props: ['size'],
+computed: {
+  normalizedSize: function () {
+    return this.size.trim().toLowerCase()
+  }
+}
+```
+
+#### `prop`验证
+
+```js
+Vue.component('example', {
+  props: {
+    // basic type check (`null` means accept any type)
+    propA: Number,
+    // multiple possible types
+    propB: [String, Number],
+    // a required string
+    propC: {
+      type: String,
+      required: true
+    },
+    // a number with default value
+    propD: {
+      type: Number,
+      default: 100
+    },
+    // object/array defaults should be returned from a
+    // factory function
+    propE: {
+      type: Object,
+      default: function () {
+        return { message: 'hello' }
+      }
+    },
+    // custom validator function
+    propF: {
+      validator: function (value) {
+        return value > 10
+      }
+    }
+  }
+})
+```
+
+`type`可以是下面的原生构造函数
+
+* String
+* Number
+* Boolean
+* Object 
+* Function
+* Array
+* Symbol
+
+`type`也可以是一个自定义的构造函数，这里会通过`instanceof`来验证
+
+### 非prop属性
+
+* 不在子组件中定义`props`属性，直接将属性传递给子组件
+* 属性会赋给子组件的根元素
+* `class`和`style`属性会与子组件上的属性合并，其它属性会替代子组件上的属性
+
+### 自定义事件
+
+* 用于子组件通知父组件
+* 子组件使用`$.emit()`来发送事件
+* 父组件在子组件元素上使用`$.on()`来监听事件
+
+```html
+<div id="counter-event-example">
+  <p>{{ total }}</p>
+  <button-counter v-on:increment="incrementTotal"></button-counter>
+  <button-counter v-on:increment="incrementTotal"></button-counter>
+</div>
+```
+
+```js
+Vue.component('button-counter', {
+  template: '<button v-on:click="incrementCounter">{{ counter }}</button>',
+  data: function () {
+    return {
+      counter: 0
+    }
+  },
+  methods: {
+    incrementCounter: function () {
+      this.counter += 1
+      this.$emit('increment')
+    }
+  },
+})
+new Vue({
+  el: '#counter-event-example',
+  data: {
+    total: 0
+  },
+  methods: {
+    incrementTotal: function () {
+      this.total += 1
+    }
+  }
+})
+```
+
+可以使用`.native`修饰符在子组件的根元素来监听原生事件
+
+```html
+<my-component v-on:click.native="doTheThing"></my-component>
+```
+
+#### `.sync`修饰符
+
+* 用于`props`属性
+* 用来实现父子组件间的双向数据绑定
+* 只是语法糖，通过派发事件来改变父组件中属性的值
+
+```html
+<comp :foo.sync="bar"></comp>
+```
+
+会被扩展为下面的形式
+
+```html
+<comp :foo="bar" @update:foo="val => bar = val"></comp>
+```
+
+如果要在子组件中更新`foo`的值，需要手动发送事件
+
+```js
+this.$emit('update:foo', newValue)
+```
+
+#### `v-model`与组件
+
+`v-model`只是语法糖
+
+```html
+<input v-model="something">
+```
+
+最终形式为：
+
+```html
+<input
+  v-bind:value="something"
+  v-on:input="something = $event.target.value">
+```
+
+当`v-model`和组件一起使用时，组件应该
+
+* 接收一个`value``prop`
+* 用输入的值触发一个`input`事件
+
+```js
+Vue.component('currency-input', {
+  template: '\
+    <span>\
+      $\
+      <input\
+        ref="input"\
+        v-bind:value="value"\
+        v-on:input="updateValue($event.target.value)">\
+    </span>\
+  ',
+  props: ['value'],
+  methods: {
+    // Instead of updating the value directly, this
+    // method is used to format and place constraints
+    // on the input's value
+    updateValue: function (value) {
+      var formattedValue = value
+        // Remove whitespace on either side
+        .trim()
+        // Shorten to 2 decimal places
+        .slice(
+          0,
+          value.indexOf('.') === -1
+            ? value.length
+            : value.indexOf('.') + 3
+        )
+      // If the value was not already normalized,
+      // manually override it to conform
+      if (formattedValue !== value) {
+        this.$refs.input.value = formattedValue
+      }
+      // Emit the number value through the input event
+      this.$emit('input', Number(formattedValue))
+    }
+  }
+})
+```
+
+默认情况下，`v-model`使用`value`作为`prop`的名称，但可以在子组件上使用`model`来定义`prop`的名称，这样`value`可以用在其它地方
+
+```js
+Vue.component('my-checkbox', {
+  model: {
+    prop: 'checked',
+    event: 'change'
+  },
+  props: {
+    checked: Boolean,
+    // this allows using the `value` prop for a different purpose
+    value: String
+  },
+  // ...
+})
+```
+
+### 使用slot进行内容分发
+
+* 用来进行父组件传入的内容和子组件自身标签的组合
+* 使用`<slot>`元素作为插入点
+
+#### 编译作用域
+
+* Everything in the parent template is compiled in parent scope; everything in the child template is compiled in child scope.
+* 父组件传入子组件的内容也属于父组件作用域
+
+#### 单个slot
+
+* 子组件中只有一个`<slot>`元素，父组件中所有的内容都会被插入这个位置
+* 如果子组件中没有`<slot>`元素，父组件的内容会被丢弃
+* `<slot>`元素中的内容是备用的，如果父组件没有传入内容，这些内容会被使用
+
+```html
+<!--子组件-->
+<div>
+  <h2>I'm the child title</h2>
+  <slot>
+    This will only be displayed if there is no content
+    to be distributed.
+  </slot>
+</div>
+```
+```html
+<!--父组件-->
+<div>
+  <h1>I'm the parent title</h1>
+  <my-component>
+    <p>This is some original content</p>
+    <p>This is some more original content</p>
+  </my-component>
+</div>
+```
+```html
+<!--结果-->
+<div>
+  <h1>I'm the parent title</h1>
+  <div>
+    <h2>I'm the child title</h2>
+    <p>This is some original content</p>
+    <p>This is some more original content</p>
+  </div>
+</div>
+```
+
+#### 具名slot
+
+* 使用`<slot>`的`name`属性给`<slot>`命名
+* 在父组件中给要传入的元素添加`slot`属性来插入到指定的位置
+* 未命名的`<slot>`是默认的，父组件中没有添加`slot`的元素会插入到这个位置
+* 如果没有默认`<slot>`，父组件中没有添加`slot`属性的元素会被丢弃
+
+```html
+<!--子组件-->
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+```
+```html
+<!--父组件-->
+<app-layout>
+  <h1 slot="header">Here might be a page title</h1>
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+  <p slot="footer">Here's some contact info</p>
+</app-layout>
+```
+```html
+<!--结果-->
+<div class="container">
+  <header>
+    <h1>Here might be a page title</h1>
+  </header>
+  <main>
+    <p>A paragraph for the main content.</p>
+    <p>And another one.</p>
+  </main>
+  <footer>
+    <p>Here's some contact info</p>
+  </footer>
+</div>
+```
+
+### 动态组件
+
+* 使用一个挂载点，动态地在几个组件之间进行切换
+* 使用`<component>`元素和它的`is`属性，改变`is`属性的值来改变组件
+* 如果需要把切换的组件保留在内存时以避免重新渲染，可以在`<component>`元素外加`<keep-alive>`
+
+```js
+var vm = new Vue({
+  el: '#example',
+  data: {
+    currentView: 'home'
+  },
+  components: {
+    home: { /* ... */ },
+    posts: { /* ... */ },
+    archive: { /* ... */ }
+  }
+})
+//直接使用组件对象
+var Home = {
+  template: '<p>Welcome home!</p>'
+}
+var vm = new Vue({
+  el: '#example',
+  data: {
+    currentView: Home
+  }
+})
+```
+```html
+<keep-alive>
+  <component :is="currentView">
+    <!-- inactive components will be cached! -->
+  </component>
+</keep-alive>
+```
+
+### 子组件引用
+
+* 用于在js中直接操作一个子组件
+* 在子组件上添加`ref`属性
+* 通过`$refs.name`来引用
+* 当和`v-for`一起使用时，返回一个数组
+* 只有在渲染完成之后，才能使用
+
+```html
+<div id="parent">
+  <user-profile ref="profile"></user-profile>
+</div>
+```
+```js
+var parent = new Vue({ el: '#parent' })
+// access child component instance
+var child = parent.$refs.profile
+```
+
+### 异步组件
+
+通过回调来返回组件
+
+```js
+Vue.component('async-example', function (resolve, reject) {
+  setTimeout(function () {
+    // Pass the component definition to the resolve callback
+    resolve({
+      template: '<div>I am async!</div>'
+    })
+  }, 1000)
+})
+```
+
+和webpack的代码分割特性一起使用
+
+```js
+Vue.component('async-webpack-example', function (resolve) {
+  // This special require syntax will instruct Webpack to
+  // automatically split your built code into bundles which
+  // are loaded over Ajax requests.
+  require(['./my-async-component'], resolve)
+})
+```
+
+还可以返回一个`Promise`
+
+```js
+Vue.component(
+  'async-webpack-example',
+  () => import('./my-async-component')
+)
+
+new Vue({
+  // ...
+  components: {
+    'my-component': () => import('./my-async-component')
+  }
+})
+```
+
+还可以返回一个特定格式的对象
+
+```js
+const AsyncComp = () => ({
+  // The component to load. Should be a Promise
+  component: import('./MyComp.vue'),
+  // A component to use while the async component is loading
+  loading: LoadingComp,
+  // A component to use if the load fails
+  error: ErrorComp,
+  // Delay before showing the loading component. Default: 200ms.
+  delay: 200,
+  // The error component will be displayed if a timeout is
+  // provided and exceeded. Default: Infinity.
+  timeout: 3000
+})
+```
+
+### 组件命名规范
+
+* 使用`PascalCase`来声明组件
+* 使用`kebab-case`在html中使用组件
+
+### 递归组件
+
+* 组件调用自身
+
+```js
+//这种情况会陷入死循环，所以需要加判断条件
+name: 'stack-overflow',
+template: '<div><stack-overflow></stack-overflow></div>'
+```
+
+### 环式调用组件
+
+* 两个组件互相调用
+* 使用`vue.component()`时可以正常工作
+* 当使用模块系统引入时，会出现错误
+* 需要告诉模块系统，模块A最终需要模块B，模块B没有必要先被解析
+* 在`beforeCreate`中引入模块
+
+```html
+<!-- tree-folder -->
+<p>
+  <span>{{ folder.name }}</span>
+  <tree-folder-contents :children="folder.children"/>
+</p>
+<!-- tree-folder-contents -->
+<ul>
+  <li v-for="child in children">
+    <tree-folder v-if="child.children" :folder="child"/>
+    <span v-else>{{ child.name }}</span>
+  </li>
+</ul>
+```
+
+```js
+beforeCreate: function () {
+  this.$options.components.TreeFolderContents = require('./tree-folder-contents.vue').default
+}
+```
+
+### x-Templates
+
+```html
+<script type="text/x-template" id="hello-world-template">
+  <p>Hello hello hello</p>
+</script>
+```
+
+```js
+Vue.component('hello-world', {
+  template: '#hello-world-template'
+})
+```
+
+### 静态组件
+
+* 使用`v-once`,只渲染一次，然后缓存起来
+
+```js
+Vue.component('terms-of-service', {
+  template: `
+    <div v-once>
+      <h1>Terms of Service</h1>
+      ... a lot of static content ...
+    </div>
+  `
+})
+```
+
+
