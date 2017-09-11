@@ -1464,4 +1464,129 @@ Vue.component('terms-of-service', {
 })
 ```
 
+## mixins
+
+mixins是灵活的复用功能的方式，mixins中可以包含任何组件选项，当一个组件使用mixins时，mixins中的属性会被混合到组件自身的选项中。
+
+```js
+// define a mixin object
+var myMixin = {
+  created: function () {
+    this.hello()
+  },
+  methods: {
+    hello: function () {
+      console.log('hello from mixin!')
+    }
+  }
+}
+// define a component that uses this mixin
+var Component = Vue.extend({
+  mixins: [myMixin]
+})
+var component = new Component() // => "hello from mixin!"
+```
+
+### 合并规则
+
+* 钩子函数会合并成数组，所有的函数都会被调用，mixins中的函数在组件中的函数之前调用
+* 对象类型的选项会合并成一个对象， 组件中对象的属性有较高的优先级
+* `Vue.extend()`使用同样的合并规则
+
+### 全局mixin
+
+* 可以在全局应用mixins,使用`Vue.mixin()`
+* 这会影响到后序添加的所有Vue实例，包括第三方Vue实例
+* 可以用来给自定义选项添加处理逻辑
+
+```js
+// inject a handler for `myOption` custom option
+Vue.mixin({
+  created: function () {
+    var myOption = this.$options.myOption
+    if (myOption) {
+      console.log(myOption)
+    }
+  }
+})
+new Vue({
+  myOption: 'hello!'
+})
+// => "hello!"
+```
+
+### 自定义选项的合并规则
+
+* 默认情况下，会覆盖组件上的属性
+* 可以通过给`Vue.config.optionMergeStrategies`添加函数来自定义合并规则
+* 对大多数的对象类型的选项，可以使用`methods`的合并规则
+
+```js
+Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {
+  // return mergedVal
+}
+```
+
+```js
+var strategies = Vue.config.optionMergeStrategies
+strategies.myOption = strategies.methods
+```
+
+## 自定义指令
+
+* 用于低级DOM访问操作
+* 全局指令使用`Vue.directive()`注册
+* 组件级的指令使用`directives`选项注册
+
+```js
+// Register a global custom directive called v-focus
+Vue.directive('focus', {
+  // When the bound element is inserted into the DOM...
+  inserted: function (el) {
+    // Focus the element
+    el.focus()
+  }
+})
+```
+
+```js
+directives: {
+  focus: {
+    // directive definition
+  }
+}
+```
+
+### 钩子函数
+
+* `bind`。只调用一次，当组件被首次绑定到元素上时。
+* `inserted`。当组件绑定的元素被插入到父元素中时调用（只能保证父元素存在，不能保证它在文档中）
+* `update`。包含组件的虚拟节点更新完成之后。它的子节点可能没有更新。指令的值可能没有更新，可以通过比较过去值和当前值来避免不必要的刷新。
+* `componentUpdated`。包含组件的虚拟节点和它的子虚拟节点更新完成之后调用
+* `unbind`。 只调用一次。指令从元素上解绑时。
+
+### 钩子函数的参数
+
+* `el`：指令绑定的DOM元素对象。
+* `binding`：包含下列属性的一个对象
+  * `name`：指令的名称，没有`v-`前缀
+  * `value`：传递给指令的值，可以使用对象字面量
+  * `oldValue`：之前的值，只在`update`和`componentUpdated`中可用
+  * `expression`：传入值的字符串形式（字面量）
+  * `arg`：传给指令的参数。冒号后面的部分。
+  * `modifiers`： 包含修饰符的对象。
+* `vnode`：Vue的编译器生成的虚拟节点
+* `oldVnode`：之前的虚拟节点，只在`update`和`componentUpdated`中可用
+
+除了`el`，其它参数都应该被认为是只读的。如果需要在钩子函数之间传递信息，可以使用元素的`dataset`
+
+### 函数简写形式
+
+如果只需要处理`bind`和`update`钩子函数
+
+```js
+Vue.directive('color-swatch', function (el, binding) {
+  el.style.backgroundColor = binding.value
+})
+```
 
