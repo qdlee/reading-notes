@@ -1590,3 +1590,168 @@ Vue.directive('color-swatch', function (el, binding) {
 })
 ```
 
+## 插件
+
+### 编写插件
+
+#### 插件的类型
+
+* 添加一些全局的方法和属性
+* 添加一个或多个全局资源：指令/过滤器/过渡效果
+* 通过全局的mixin添加一些组件属性
+* 通过将方法附加到`Vue.prototype`来添加一些实例方法
+* 一个提供自己api的库，同时注入一些上面的形式的组合
+
+#### 插件的格式
+
+Vue插件需要对外暴露一个`install`方法，方法的第一个参数是`Vue`构造函数，第二个参数是一个对象，接收一些额外的选项
+
+```js
+MyPlugin.install = function (Vue, options) {
+  // 1. add global method or property
+  Vue.myGlobalMethod = function () {
+    // something logic ...
+  }
+  // 2. add a global asset
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) {
+      // something logic ...
+    }
+    ...
+  })
+  // 3. inject some component options
+  Vue.mixin({
+    created: function () {
+      // something logic ...
+    }
+    ...
+  })
+  // 4. add an instance method
+  Vue.prototype.$myMethod = function (methodOptions) {
+    // something logic ...
+  }
+}
+```
+
+### 使用插件
+
+* 使用`Vue.use()`
+* Vue会阻止多次使用同一个插件，对同一个插件多次调用`Vue.use()`只会注册一次
+
+```js
+Vue.use(MyPlugin, { someOption: true })
+```
+
+## 过滤器
+
+* 过滤器用来对值进行格式化
+* 可以用来插入值和`v-bind`指令
+* 跟在表达式之后，用管道运算符`|`分隔
+* 可以使用多个过滤器
+* 第一个参数是要格式化的值
+* 可以给过滤器传入参数，参数从第二个参数开始
+
+```html
+<!-- in mustaches -->
+{{ message | capitalize }}
+<!-- in v-bind -->
+<div v-bind:id="rawId | formatId"></div>
+
+{{ message | filterA | filterB }}
+
+{{ message | filterA('arg1', arg2) }}
+```
+
+```js
+new Vue({
+  // ...
+  filters: {
+    capitalize: function (value) {
+      if (!value) return ''
+      value = value.toString()
+      return value.charAt(0).toUpperCase() + value.slice(1)
+    }
+  }
+})
+```
+
+## 动画
+
+### 实现方式
+
+给要实现动画的组件外面包裹一个`component`组件，然后给`component`组件添加css class或者钩子函数来添加动画效果。
+
+### 适用场景
+
+* 条件渲染(使用`v-if`)
+* 条件显示(使用`v-show`)
+* 动态组件
+* 组件根结点
+
+### 示例
+
+```html
+<div id="demo">
+  <button v-on:click="show = !show">
+    Toggle
+  </button>
+  <transition name="fade">
+    <p v-if="show">hello</p>
+  </transition>
+</div>
+```
+
+```js
+new Vue({
+  el: '#demo',
+  data: {
+    show: true
+  }
+})
+```
+
+```css
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0
+}
+```
+
+### CSS实现
+
+* 可以使用transition和animation两种方式
+* 给`component`添加`name`属性，`v-enter`中的`v`使用`name`来替换
+* 当使用animation时，`v-enter`在`animationend`事件中才会被删除
+* 当transition和animation一起使用时，需要给`component`添加一个`type`属性来告诉Vue要使用哪一个。`type`属性的值可以是`animation`或者`transition`
+* 
+
+#### class
+
+* `v-enter`。进入的开始状态，在元素被插入之前添加，在元素被插入之后的下一帧删除
+* `v-enter-active`。进入的活动状态，用来定义动画的属性。在元素被插入之前添加，动画完成之后删除
+* `v-enter-to`。进入的结束状态，在`v-enter`被删除的同时添加，在动画完成之后删除。
+* `v-leave`。离开的开始状态。在离开过程被触发时立即添加，下一帧删除
+* `v-leave-active`。离开的活动状态，在离开过程被触发时立即添加，动画完成之后删除
+* `v-leave-to`。离开的结束状态，在`v-leave`被删除的同时添加，在动画完成之后删除。
+
+#### 自定义的class
+
+* 可以使用自定义的class名称来替换默认的class名称
+* 当和其他动画库一起使用时很有用
+
+* `enter-class`
+* `enter-active-class`
+* `enter-to-class`
+* `leave-class`
+* `leave-active-class`
+* `leave-to-class`
+
+#### 明确过渡时间
+
+```html
+<transition :duration="1000">...</transition>
+<transition :duration="{ enter: 500, leave: 800 }">...</transition>
+```
+
